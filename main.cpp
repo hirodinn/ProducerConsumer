@@ -5,14 +5,17 @@
 #include "buffer.h"
 #include "sync.h"
 
-int main() {
+std::mutex mtx;
+std::condition_variable notFull;
+std::condition_variable notEmpty;
+
+int main()
+{
     std::cout << "Starting Producer-Consumer execution...\n";
 
-    // Create producer and consumer threads
     std::thread producerThread(producer);
     std::thread consumerThread(consumer);
 
-    // Start/join threads
     producerThread.join();
     consumerThread.join();
 
