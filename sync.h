@@ -1,11 +1,13 @@
 #ifndef SYNC_H
 #define SYNC_H
 
-#include <condition_variable>
-#include <mutex>
+#include <semaphore.h>
 
-extern std::mutex mtx;
-extern std::condition_variable notFull;
-extern std::condition_variable notEmpty;
+extern sem_t emptySlots;
+extern sem_t fullSlots;
+extern sem_t bufferMutex;
+
+void init_sync();
+void destroy_sync();
 
 #endif

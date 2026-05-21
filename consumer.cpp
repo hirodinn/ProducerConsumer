@@ -6,27 +6,21 @@
 #include "buffer.h"
 #include "sync.h"
 
-using namespace std;
-
 void consumer() {
 
     for (int i = 0; i < 5; i++) {
 
-        unique_lock<mutex> lock(mtx);
-
-        notEmpty.wait(lock, [] {
-            return !buffer.empty();
-        });
+        sem_wait(&fullSlots);
+        sem_wait(&bufferMutex);
 
         int item = buffer.front();
         buffer.pop();
 
-        cout << "Consumed: " << item << endl;
+        std::cout << "Consumed: " << item << std::endl;
 
-        notFull.notify_one();
+        sem_post(&bufferMutex);
+        sem_post(&emptySlots);
 
-        lock.unlock();
-
-        this_thread::sleep_for(chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 }

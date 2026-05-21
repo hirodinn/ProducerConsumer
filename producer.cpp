@@ -8,19 +8,16 @@
 
 void producer() {
 	for (int i = 0; i < 5; i++) {
-		std::unique_lock<std::mutex> lock(mtx);
-
-		notFull.wait(lock, [] {
-			return buffer.size() < BUFFER_SIZE;
-		});
+		sem_wait(&emptySlots);
+		sem_wait(&bufferMutex);
 
 		int item = i + 1;
 		buffer.push(item);
 
 		std::cout << "Produced: " << item << std::endl;
 
-		notEmpty.notify_one();
-		lock.unlock();
+		sem_post(&bufferMutex);
+		sem_post(&fullSlots);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
